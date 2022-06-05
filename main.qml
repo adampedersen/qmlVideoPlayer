@@ -7,7 +7,7 @@ import QtQuick.Controls.Universal
 import QtMultimedia
 import QtQuick.Dialogs
 
-
+//Made by Adam Pedersen
 
 
 Window {
