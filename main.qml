@@ -27,34 +27,37 @@ Window {
 
 
         Rectangle{
-            id: playPauseButtonRect
+            id: playPauseButtonAnchorRect
             height: 100
             width: 50
-//            color: 'gray'
+            color: 'teal'
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             //TODO: make my own button
-              RoundButton {
-                  id: playPauseButton
-                  radius: 100.0
+              Rectangle {
+                  id: playPauseButtonRect
+                  height: 35
+                  width: 35
+                  color: 'gray'
                   anchors.centerIn: parent
-                  text: "\u2016";
-                  onClicked:{
-                      highlighted: true;
-                      if(mediaPlayer.playbackState == MediaPlayer.PlayingState){
-                          mediaPlayer.pause();
-    //                      playPauseButton.text = "\u2016";
-                           playPauseButton.text = "\u25B6";
-                       }else{
-                          mediaPlayer.play();
-    //                      playPauseButton.text = "\u25B6";
-                           playPauseButton.text = "\u2016";
-                       }
-
+                  Text {
+                       id: playPauseText
+                       text: qsTr("\u2016")
+                       anchors.centerIn: parent
                   }
+                  MouseArea {
+                     id: playPauseMouseArea
+                     anchors.fill: parent
+                     onClicked:{
+                          if(mediaPlayer.playbackState == MediaPlayer.PlayingState){
+                               mediaPlayer.pause();
+                               playPauseText.text = "\u25B6";
+                          }else{
+                               mediaPlayer.play();
+                               playPauseText.text = "\u2016";
+                          }
 
-                  onReleased:{
-                      highlighted: false
+                     }
                   }
               }
          }
@@ -63,11 +66,11 @@ Window {
 
           Rectangle{
               id: sliderRect
-//              color: 'teal'
+              color: 'red'
               width: 350
 
               height: 100
-              anchors.left: playPauseButtonRect.right
+              anchors.left: playPauseButtonAnchorRect.right
               anchors.bottom: parent.bottom
             //TODO: make my own slider
               Slider {
@@ -101,7 +104,7 @@ Window {
                          mediaPlayer.pause();
                           //change playPauseButton to be pause symbol (assumes autoplay)
                           //accounts for case when slider is slid to end with video paused
-                          playPauseButton.text = "\u2016";
+                          playPauseText.text = "\u2016";
                          filePicker.open();
                      }
              }
