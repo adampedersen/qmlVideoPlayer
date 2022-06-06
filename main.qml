@@ -30,9 +30,10 @@ Window {
             id: playPauseButtonRect
             height: 100
             width: 50
-//            color: 'red'
+//            color: 'gray'
             anchors.bottom: parent.bottom
             anchors.left: parent.left
+            //TODO: make my own button
               RoundButton {
                   id: playPauseButton
                   radius: 100.0
@@ -68,7 +69,7 @@ Window {
               height: 100
               anchors.left: playPauseButtonRect.right
               anchors.bottom: parent.bottom
-
+            //TODO: make my own slider
               Slider {
                    id: videoSlider
                    anchors.centerIn: parent
@@ -118,7 +119,7 @@ Window {
         anchors.right: parent.right
     }
 
-    // Video picker
+    // TODO use native IOS api instead of FileDialog
     FileDialog {
          id:          filePicker
          title:       "Select video"
