@@ -30,7 +30,7 @@ Window {
             id: playPauseButtonAnchorRect
             height: 100
             width: 50
-            color: 'teal'
+//            color: 'teal'
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             //TODO: make my own button
@@ -38,7 +38,7 @@ Window {
                   id: playPauseButtonRect
                   height: 35
                   width: 35
-                  color: 'gray'
+                  color: 'light gray'
                   anchors.centerIn: parent
                   Text {
                        id: playPauseText
@@ -57,6 +57,13 @@ Window {
                                playPauseText.text = "\u2016";
                           }
 
+                     }
+                     onPressed:{
+                         playPauseButtonRect.color = 'dark gray'
+                     }
+
+                     onReleased:{
+                         playPauseButtonRect.color = 'light gray'
                      }
                   }
               }
@@ -78,23 +85,30 @@ Window {
                   anchors.centerIn: parent
                   width: 300
                   height: 25
-                  color: 'teal'
-                  opacity: 0.5
+//                  color: 'teal'
+
                   Rectangle{
                       id: sliderProgressBackgroundRect
                       anchors.centerIn: parent
                       width: 300
-                      height: 2
+                      height: 3
                       color: 'light gray'
+                  }
+                  Rectangle{
+                      id: sliderProgressRect
+                      anchors.left: parent.left
+                      anchors.top:  parent.top
+                      anchors.bottom: parent.bottom
+                      color: 'blue'
+                      opacity: 0.8
                   }
                   Rectangle{
                       id: sliderRect
                       anchors.verticalCenter: parent.verticalCenter
                       width: 3
                       height: 25
-                      color: 'blue'
-//                      x: 0
-
+                      color: 'black'
+                      opacity: 1
                  }
                  MouseArea {
                      id: sliderMouseArea
@@ -103,14 +117,22 @@ Window {
                      drag.axis: Drag.XAxis
                      drag.minimumX: 0;
                      drag.maximumX: parent.width;
+                     property bool wasPlaying: true;
+                     onClicked:{
+                         mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                     }
+
                      onPressed:{
+                         sliderMouseArea.wasPlaying = (mediaPlayer.playbackState == MediaPlayer.PlayingState);
                          mediaPlayer.pause();
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
 
                      }
                      onReleased: {
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
-                         mediaPlayer.play();
+                         if(sliderMouseArea.wasPlaying){
+                             mediaPlayer.play();
+                         }
                      }
                  }
               }
@@ -132,6 +154,7 @@ Window {
              onPositionChanged: {
 //                 console.log("onPositionChanged called");
                  sliderRect.x = sliderMouseAreaAnchorRect.width * (mediaPlayer.position/mediaPlayer.duration);
+                 sliderProgressRect.width = sliderMouseAreaAnchorRect.width * (mediaPlayer.position/mediaPlayer.duration);
                  if (mediaPlayer.position > 1000 && mediaPlayer.duration - mediaPlayer.position < 100) {
 //                         console.log("end found");
                          mediaPlayer.pause();
