@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
+//import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Controls.Material
-import QtQuick.Controls.Universal
+//import QtQuick.Controls.Material
+//import QtQuick.Controls.Universal
 import QtMultimedia
 import QtQuick.Dialogs
 
@@ -30,15 +30,13 @@ Window {
             id: playPauseButtonAnchorRect
             height: 100
             width: 50
-            color: 'teal'
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            //TODO: make my own button
               Rectangle {
                   id: playPauseButtonRect
                   height: 35
                   width: 35
-                  color: 'gray'
+                  color: 'light gray'
                   anchors.centerIn: parent
                   Text {
                        id: playPauseText
@@ -58,31 +56,117 @@ Window {
                           }
 
                      }
+                     onPressed:{
+                         playPauseButtonRect.color = 'dark gray'
+                     }
+
+                     onReleased:{
+                         playPauseButtonRect.color = 'light gray'
+                     }
                   }
               }
          }
 
 
+        //Timer for loop
+        Timer {
+            id: updateSliderTimer
+            interval: 100
+            repeat: true
+            running: true
+            triggeredOnStart: true
+            onTriggered: updateSlider()
+            function updateSlider() {
+                if (sliderMouseArea.isPressed) {
+                    mediaPlayer.position = (sliderMouseArea.mouseX / sliderMouseAreaAnchorRect.width) * mediaPlayer.duration;
+                }
+            }
+        }
+
+        Timer {
+            id: checkEndTimer
+            interval: 100
+            repeat: true
+            running: true
+            triggeredOnStart: false
+            onTriggered: checkEnd()
+            function checkEnd() {
+                if (mediaPlayer.position > 1000 && mediaPlayer.duration - mediaPlayer.position < 100) {
+                     updateSliderTimer.stop();
+                    /*change playPauseButton to be pause symbol (assumes autoplay)
+                    accounts for case when slider is slid to end with video paused*/
+                    playPauseText.text = "\u2016";
+                    filePicker.open();
+                }
+            }
+        }
+
+
 
           Rectangle{
-              id: sliderRect
-              color: 'red'
+              id: sliderAnchorRect
               width: 350
-
               height: 100
               anchors.left: playPauseButtonAnchorRect.right
               anchors.bottom: parent.bottom
-            //TODO: make my own slider
-              Slider {
-                   id: videoSlider
-                   anchors.centerIn: parent
-                   width: parent.width
+              Rectangle{
+                  id: sliderMouseAreaAnchorRect
+                  anchors.centerIn: parent
+                  width: 300
+                  height: 25
+                  Rectangle{
+                      id: sliderProgressBackgroundRect
+                      anchors.centerIn: parent
+                      width: 300
+                      height: 3
+                      color: 'light gray'
+                  }
+                  Rectangle{
+                      id: sliderProgressRect
+                      anchors.left: parent.left
+                      anchors.top:  parent.top
+                      anchors.bottom: parent.bottom
+                      anchors.right: sliderRect.left
+                      color: 'blue'
+                      opacity: 0.8
+                  }
+                  Rectangle{
+                      id: sliderRect
+                      anchors.verticalCenter: parent.verticalCenter
+                      width: 3
+                      height: 25
+                      color: 'black'
+                      opacity: 1
+                 }
+                 MouseArea {
+                     id: sliderMouseArea
+                     anchors.fill: parent
+                     drag.target: sliderRect
+                     drag.axis: Drag.XAxis
+                     drag.minimumX: 0;
+                     drag.maximumX: parent.width;
+                     property bool isPressed: false;
+                     property bool wasPlaying: true;
 
-                   enabled: mediaPlayer.seekable
-                   to: 1.0
-                   value: mediaPlayer.position / mediaPlayer.duration
-                   onMoved: mediaPlayer.setPosition(value * mediaPlayer.duration)
+                     onPressed:{
+                         isPressed = true;
+                         sliderMouseArea.wasPlaying = (mediaPlayer.playbackState == MediaPlayer.PlayingState);
+                         mediaPlayer.pause();
+                         mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                         updateSliderTimer.start()
+                     }
+
+                     onReleased: {
+                         isPressed = false;
+                         updateSliderTimer.stop()
+                         mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                         if(sliderMouseArea.wasPlaying){
+                             mediaPlayer.play();
+                         }
+                     }
+                 }
               }
+
           }
 
 
@@ -93,29 +177,19 @@ Window {
              audioOutput: AudioOutput {
                 id: audio
                 muted: false
-               volume: 1.0
+                volume: 1.0
              }
 
-            //play new video when the current one ends
              onPositionChanged: {
-//                 console.log("onPositionChanged called");
-                 if (mediaPlayer.position > 1000 && mediaPlayer.duration - mediaPlayer.position < 100) {
-                         console.log("end found");
-                         mediaPlayer.pause();
-                          //change playPauseButton to be pause symbol (assumes autoplay)
-                          //accounts for case when slider is slid to end with video paused
-                          playPauseText.text = "\u2016";
-                         filePicker.open();
-                     }
+                 sliderRect.x = sliderMouseAreaAnchorRect.width * (mediaPlayer.position/mediaPlayer.duration);
+                 sliderProgressRect.width = sliderMouseAreaAnchorRect.width * (mediaPlayer.position/mediaPlayer.duration);
              }
 
     }
 
     VideoOutput {
         id: videoOutput
-
         property bool fullScreen: false
-
         height: 700
         anchors.top: t.bottom
         anchors.left: parent.left
@@ -134,6 +208,7 @@ Window {
              mediaPlayer.stop()
              mediaPlayer.source = filePicker.currentFile
              mediaPlayer.play()
+             checkEndTimer.start()
          }
     }
 
