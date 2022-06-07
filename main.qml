@@ -78,7 +78,7 @@ Window {
             onTriggered: updateSlider()
             function updateSlider() {
                 if (sliderMouseArea.isPressed) {
-                    mediaPlayer.position = (sliderMouseArea.mouseX / 300) * mediaPlayer.duration;
+                    mediaPlayer.position = (sliderMouseArea.mouseX / sliderMouseAreaAnchorRect.width) * mediaPlayer.duration;
                 }
             }
         }
