@@ -38,7 +38,7 @@ Window {
                   id: playPauseButtonRect
                   height: 35
                   width: 35
-                  color: 'light gray'
+                  color: playPauseButtonAnchorRect.pressed ? 'dark gray' : 'light gray'
                   anchors.centerIn: parent
                   Text {
                        id: playPauseText
@@ -58,16 +58,33 @@ Window {
                           }
 
                      }
-                     onPressed:{
-                         playPauseButtonRect.color = 'dark gray'
-                     }
+//                     onPressed:{
+//                         playPauseButtonRect.color = 'dark gray'
+//                     }
 
-                     onReleased:{
-                         playPauseButtonRect.color = 'light gray'
-                     }
+//                     onReleased:{
+//                         playPauseButtonRect.color = 'light gray'
+//                     }
                   }
               }
          }
+
+
+        //Timer for loop
+        Timer {
+            id: updatePanelTimer
+            interval: 100
+            repeat: true
+            running: true
+            triggeredOnStart: true
+            onTriggered: updatePanel()
+            function updatePanel() {
+                if (sliderMouseArea.isPressed) {
+                    mediaPlayer.position = (sliderMouseArea.mouseX / 300) * mediaPlayer.duration;
+                    sliderProgressRect.width = (sliderMouseArea.mouseX / 300) * 300;
+                }
+            }
+        }
 
 
 
@@ -118,6 +135,7 @@ Window {
                      drag.axis: Drag.XAxis
                      drag.minimumX: 0;
                      drag.maximumX: parent.width;
+                     property bool isPressed: false;
                      property bool wasPlaying: true;
                      onClicked:{
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
@@ -125,24 +143,25 @@ Window {
                      }
 
                      onPressed:{
+                         isPressed = true;
                          sliderMouseArea.wasPlaying = (mediaPlayer.playbackState == MediaPlayer.PlayingState);
                          mediaPlayer.pause();
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
                          sliderProgressRect.width = (mouseX / parent.width) * parent.width;
-//                         while(sliderMouseArea.containsPress){
-//                             mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
-//                             sliderProgressRect.width = (mouseX / parent.width) * parent.width;
-//                         }
-
+                         updatePanelTimer.start()
                      }
-//                     onPressAndHold: {
-//                         while(sliderMouseArea.containsPress){
-//                             mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
-//                             sliderProgressRect.width = (mouseX / parent.width) * parent.width;
-//                         }
+
+//                     onContainsPress:{
+//                         sliderMouseArea.wasPlaying = (mediaPlayer.playbackState == MediaPlayer.PlayingState);
+//                         mediaPlayer.pause();
+//                         mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+//                         sliderProgressRect.width = (mouseX / parent.width) * parent.width;
 //                     }
 
+
                      onReleased: {
+                         isPressed = false;
+                         updatePanelTimer.stop()
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
                          sliderProgressRect.width = (mouseX / parent.width) * parent.width;
                          if(sliderMouseArea.wasPlaying){
