@@ -65,24 +65,56 @@ Window {
 
 
           Rectangle{
-              id: sliderRect
-              color: 'red'
+              id: sliderAnchorRect
+//              color: 'red'
+//              opacity: 0.5
               width: 350
-
               height: 100
               anchors.left: playPauseButtonAnchorRect.right
               anchors.bottom: parent.bottom
             //TODO: make my own slider
-              Slider {
-                   id: videoSlider
-                   anchors.centerIn: parent
-                   width: parent.width
+              Rectangle{
+                  id: sliderMouseAreaAnchorRect
+                  anchors.centerIn: parent
+                  width: 300
+                  height: 25
+                  color: 'teal'
+                  opacity: 0.5
+                  Rectangle{
+                      id: sliderProgressBackgroundRect
+                      anchors.centerIn: parent
+                      width: 300
+                      height: 2
+                      color: 'light gray'
+                  }
+                  Rectangle{
+                      id: sliderRect
+                      anchors.verticalCenter: parent.verticalCenter
+                      width: 3
+                      height: 25
+                      color: 'blue'
+//                      x: 0
 
-                   enabled: mediaPlayer.seekable
-                   to: 1.0
-                   value: mediaPlayer.position / mediaPlayer.duration
-                   onMoved: mediaPlayer.setPosition(value * mediaPlayer.duration)
+                 }
+                 MouseArea {
+                     id: sliderMouseArea
+                     anchors.fill: parent
+                     drag.target: sliderRect
+                     drag.axis: Drag.XAxis
+                     drag.minimumX: 0;
+                     drag.maximumX: parent.width;
+                     onPressed:{
+                         mediaPlayer.pause();
+                         mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+
+                     }
+                     onReleased: {
+                         mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                         mediaPlayer.play();
+                     }
+                 }
               }
+
           }
 
 
@@ -93,14 +125,15 @@ Window {
              audioOutput: AudioOutput {
                 id: audio
                 muted: false
-               volume: 1.0
+                volume: 1.0
              }
 
             //play new video when the current one ends
              onPositionChanged: {
 //                 console.log("onPositionChanged called");
+                 sliderRect.x = sliderMouseAreaAnchorRect.width * (mediaPlayer.position/mediaPlayer.duration);
                  if (mediaPlayer.position > 1000 && mediaPlayer.duration - mediaPlayer.position < 100) {
-                         console.log("end found");
+//                         console.log("end found");
                          mediaPlayer.pause();
                           //change playPauseButton to be pause symbol (assumes autoplay)
                           //accounts for case when slider is slid to end with video paused
