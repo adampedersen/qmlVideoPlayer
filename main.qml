@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
+//import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Controls.Material
-import QtQuick.Controls.Universal
+//import QtQuick.Controls.Material
+//import QtQuick.Controls.Universal
 import QtMultimedia
 import QtQuick.Dialogs
 
@@ -99,6 +99,7 @@ Window {
                       anchors.left: parent.left
                       anchors.top:  parent.top
                       anchors.bottom: parent.bottom
+                      anchors.right: sliderRect.left
                       color: 'blue'
                       opacity: 0.8
                   }
@@ -120,16 +121,30 @@ Window {
                      property bool wasPlaying: true;
                      onClicked:{
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                         sliderProgressRect.width = (mouseX / parent.width) * parent.width;
                      }
 
                      onPressed:{
                          sliderMouseArea.wasPlaying = (mediaPlayer.playbackState == MediaPlayer.PlayingState);
                          mediaPlayer.pause();
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                         sliderProgressRect.width = (mouseX / parent.width) * parent.width;
+//                         while(sliderMouseArea.containsPress){
+//                             mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+//                             sliderProgressRect.width = (mouseX / parent.width) * parent.width;
+//                         }
 
                      }
+//                     onPressAndHold: {
+//                         while(sliderMouseArea.containsPress){
+//                             mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+//                             sliderProgressRect.width = (mouseX / parent.width) * parent.width;
+//                         }
+//                     }
+
                      onReleased: {
                          mediaPlayer.position = (mouseX / parent.width) * mediaPlayer.duration;
+                         sliderProgressRect.width = (mouseX / parent.width) * parent.width;
                          if(sliderMouseArea.wasPlaying){
                              mediaPlayer.play();
                          }
@@ -157,12 +172,12 @@ Window {
                  sliderProgressRect.width = sliderMouseAreaAnchorRect.width * (mediaPlayer.position/mediaPlayer.duration);
                  if (mediaPlayer.position > 1000 && mediaPlayer.duration - mediaPlayer.position < 100) {
 //                         console.log("end found");
-                         mediaPlayer.pause();
+                     mediaPlayer.pause();
                           //change playPauseButton to be pause symbol (assumes autoplay)
                           //accounts for case when slider is slid to end with video paused
-                          playPauseText.text = "\u2016";
-                         filePicker.open();
-                     }
+                     playPauseText.text = "\u2016";
+                     filePicker.open();
+                 }
              }
 
     }
