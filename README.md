@@ -6,6 +6,6 @@ Designed and tested for iOS
 - [x] Slider should also allow user to drag to seek playback position of the video file that’s being played. 
 - [x] Prevent the phone from getting screen auto-locked while the video is playing 
 - [x] Does not use Qt Quick Controls
-- [ ] Does not use FileDialog
+
 
 by Adam Pedersen 2022

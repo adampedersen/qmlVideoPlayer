@@ -11,18 +11,7 @@
 //        [(id) context openPhotoLibraryObjC];
 //    }
 
-//     (void)openPhotoLibraryObjC{
-//         window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-//         [window setRootViewController:self];
-//         [window makeKeyAndVisible];
-//         UIImagePickerController *imageController = [[[UIImagePickerController alloc] init] autorelease];
-//        imageController.delegate = self;
-//        [imageController setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-//        imageController.allowsEditing = NO;
-//        if(fileType ==2)
-//            imageController.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *) kUTTypeMovie , nil];
-//        [self presentViewController:imageController animated:YES completion:NULL];
-//    }
+
 
 
     void ImagePicker::selectVideo(){
