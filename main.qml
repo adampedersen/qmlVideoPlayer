@@ -3,6 +3,7 @@ import QtQuick.Window
 import QtQuick.Layouts
 import QtMultimedia
 import QtQuick.Dialogs
+import mycomponents.videoselector 1.0
 
 //Made by Adam Pedersen
 
@@ -18,6 +19,10 @@ Window {
                 text: qsTr("Video Player")
                 horizontalAlignment:  Text.AlignHCenter
                 width: parent.width
+    }
+
+    VideoSelector {
+        id: vSelector
     }
 
 

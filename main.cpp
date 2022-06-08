@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include "videoselector.h"
 
 
 int main(int argc, char *argv[])
@@ -19,7 +20,12 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
 
+//    engine.addImportPath(QStringLiteral("."));
     engine.addImportPath(QStringLiteral("qrc:/"));
+
+//    qmlRegisterType<VideoSelector>("videoselectors", 1,0,"VideoSelector");
+
+
 
     return app.exec();
 }
